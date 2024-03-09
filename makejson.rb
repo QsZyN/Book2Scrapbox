@@ -45,7 +45,6 @@ gyazo = Gyazo::Client.new access_token: token
     lines << "[]"
     lines << "[📃#{bookname}_#{sprintf('%03d',currentPage-1)}]📍[📃#{bookname}_#{sprintf('%03d',currentPage+1)}]"
     lines << "[[#{gyazourl}]]"
-    lines << line1
     lines << ""
 
     pages << page

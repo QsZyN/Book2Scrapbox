@@ -8,6 +8,8 @@ jsondata = {}
 pages = []
 jsondata['pages'] = pages
 
+bookname = ARGV[0]
+page_offset = ARGV[1].to_i
 jpegfiles = ARGV.grep /\.jpg/i
 
 token = ENV['GYAZO_ACCESS_TOKEN']
@@ -24,15 +26,12 @@ gyazo = Gyazo::Client.new access_token: token
 
   if data
     STDERR.puts file
-  
-    # S3にアップロード
-    # STDERR.puts "ruby #{home}/bin/upload #{file}"
-    # s3url = `ruby #{home}/bin/upload #{file}`.chomp
-    # STDERR.puts s3url
 
+    currentPage = i+1+page_offset
+    
     # Gyazoにアップロード
     STDERR.puts "gyazo-cli #{file}"
-    res = gyazo.upload imagefile: file
+    res = gyazo.upload imagefile: file, referer_url: "https://scrapbox.io/himitsu-untitled/📃#{bookname}_#{i+1+page_offset}", desc: bookname
     gyazourl = res[:permalink_url]
     STDERR.puts gyazourl
     
@@ -43,16 +42,8 @@ gyazo = Gyazo::Client.new access_token: token
     lines = []
     page['lines'] = lines
     lines << page['title']
-    if i == 0
-      line1 = "[#{sprintf('%03d',i)}]  [#{sprintf('%03d',i+1)}]"
-    elsif i == jpegfiles.length - 1
-      line1 = "[#{sprintf('%03d',i-1)}]  [#{sprintf('%03d',i)}]"
-    else
-      line1 = "[#{sprintf('%03d',i-1)}]  [#{sprintf('%03d',i+1)}]"
-    end
-
-    lines << line1
-    # lines << "[[#{s3url} #{gyazourl}]]"
+    lines << "[]"
+    lines << "[📃#{bookname}_#{sprintf('%03d',currentPage-1)}]📍[📃#{bookname}_#{sprintf('%03d',currentPage+1)}]"
     lines << "[[#{gyazourl}]]"
     lines << line1
     lines << ""
